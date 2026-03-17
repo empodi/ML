@@ -1,0 +1,19 @@
+<LCEL을 이용한 다양한 체인>
+
+from langchain_core.runnables import RunnableParallel
+
+prompt1 = ChatPromptTemplate(["주어진 의견에 대해 무조건적으로 반대하세요. 답변은 반말로 하세요.\n 의견:{opinion}"])
+prompt2 = ChatPromptTemplate(["주어진 의견에 대해 무조건적으로 찬성하세요. 답변은 정중하게 하세요.\n 의견:{opinion}"])
+
+chain1 = prompt1 | llm | StrOutputParser()
+chain2 = prompt2 | llm | StrOutputParser()
+
+chain3 = RunnableParallel(cons = chain1, pros = chain2)
+
+result = chain3.invoke({'opinion':'컴퓨터공학이 세상에서 가장 중요한 학문이다.'})
+
+result
+
+
+# 위에서 RunnableParallel() 안에 cons, pros 이름은 직접 지정이 가능한건가? 갑자기 어디서 등장한거야?
+
