@@ -1,5 +1,6 @@
 <LCEL을 이용한 다양한 체인>
 
+1. 
 from langchain_core.runnables import RunnableParallel
 
 prompt1 = ChatPromptTemplate(["주어진 의견에 대해 무조건적으로 반대하세요. 답변은 반말로 하세요.\n 의견:{opinion}"])
@@ -16,4 +17,40 @@ result
 
 
 # 위에서 RunnableParallel() 안에 cons, pros 이름은 직접 지정이 가능한건가? 갑자기 어디서 등장한거야?
+
+
+2.
+chain4 = prompt3 | llm | StrOutputParser()
+
+# 여기서 마지막에 StrOutputParser() 가 필수인가?
+
+
+3.
+tools = [tavily_search]
+
+llm_with_tools = llm.bind_tools(tools)
+llm_with_tools
+prompt = ChatPromptTemplate(
+    [
+        ('system', '주어진 검색 툴을 사용해서 질문에 답변하세요.'),
+        ('human', '{query}')
+    ]
+)
+chain = prompt | llm_with_tools
+tool_call_msg = chain.invoke('Paas 서비스가 뭐야?')
+tool_list = {'tavily_search': tavily_search}
+tool_exec = tool_list[tool_call_msg.tool_calls[0]['name']]
+
+tool_msg = tool_exec.invoke(tool_call_msg.tool_calls[0])
+
+messages= []
+
+messages.append(HumanMessage('Paas 서비스가 뭐야?'))
+# 질문이 들어있는 HumanMessage + 툴 요청이 들어있는 AIMessage + 툴 결과가 들어있는 ToolMessage
+messages.append(tool_call_msg)
+messages.append(tool_msg)
+
+tool_list, tool_exec는 어디서 나온거야? 역할이 무엇이고, 무슨 변수야 아님 객체?
+
+
 
